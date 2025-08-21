@@ -21,6 +21,9 @@ provider:
           Action: "lambda:InvokeFunction"
           Resource: "arn:aws:lambda:${aws:region}:${aws:accountId}:function:${self:service}-${sls:stage}-*"
 
+      managedPolicies:
+        - "arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess"
+
 functions:
 
   orderPlaced:
