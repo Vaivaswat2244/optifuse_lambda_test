@@ -7,7 +7,7 @@ provider:
   runtime: nodejs18.x
   # IMPORTANT: Choose the AWS region you want to deploy to.
   # This should match the region your AWS profile is configured for.
-  region: us-east-1
+  region: ap-south-1
 
   # This block enables AWS X-Ray tracing for our application.
   tracing:
