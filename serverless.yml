@@ -1,0 +1,46 @@
+# serverless.yml
+
+service: optifuse-ecommerce-test
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  # IMPORTANT: Choose the AWS region you want to deploy to.
+  # This should match the region your AWS profile is configured for.
+  region: us-east-1
+
+  # This block enables AWS X-Ray tracing for our application.
+  tracing:
+    apiGateway: true
+    lambda: true
+  
+  iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Action: "lambda:InvokeFunction"
+          Resource: "arn:aws:lambda:${aws:region}:${aws:accountId}:function:${self:service}-${sls:stage}-*"
+
+functions:
+
+  orderPlaced:
+    handler: handler.orderPlaced
+    events:
+      - httpApi:
+          path: /order
+          method: post
+
+  processPayment:
+    handler: handler.processPayment
+  
+  updateInventory:
+    handler: handler.updateInventory
+
+  prepareShipping:
+    handler: handler.prepareShipping
+
+  notifyCustomer:
+    handler: handler.notifyCustomer
+
+  logCompletion:
+    handler: handler.logCompletion

@@ -1,0 +1,544 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "The AWS CloudFormation template for this Serverless application",
+  "Resources": {
+    "OrderPlacedLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/optifuse-ecommerce-test-dev-orderPlaced"
+      }
+    },
+    "ProcessPaymentLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/optifuse-ecommerce-test-dev-processPayment"
+      }
+    },
+    "UpdateInventoryLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/optifuse-ecommerce-test-dev-updateInventory"
+      }
+    },
+    "PrepareShippingLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/optifuse-ecommerce-test-dev-prepareShipping"
+      }
+    },
+    "NotifyCustomerLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/optifuse-ecommerce-test-dev-notifyCustomer"
+      }
+    },
+    "LogCompletionLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/optifuse-ecommerce-test-dev-logCompletion"
+      }
+    },
+    "IamRoleLambdaExecution": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "lambda.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": {
+              "Fn::Join": [
+                "-",
+                [
+                  "optifuse-ecommerce-test",
+                  "dev",
+                  "lambda"
+                ]
+              ]
+            },
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogStream",
+                    "logs:CreateLogGroup",
+                    "logs:TagResource"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/optifuse-ecommerce-test-dev*:*"
+                    }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/optifuse-ecommerce-test-dev*:*:*"
+                    }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "lambda:InvokeFunction"
+                  ],
+                  "Resource": "arn:aws:lambda:us-east-1:056276303530:function:optifuse-ecommerce-test-dev-*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "xray:PutTraceSegments",
+                    "xray:PutTelemetryRecords"
+                  ],
+                  "Resource": [
+                    "*"
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "Path": "/",
+        "RoleName": {
+          "Fn::Join": [
+            "-",
+            [
+              "optifuse-ecommerce-test",
+              "dev",
+              {
+                "Ref": "AWS::Region"
+              },
+              "lambdaRole"
+            ]
+          ]
+        }
+      }
+    },
+    "OrderPlacedLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "serverless-framework-deployments-us-east-1-965f6254-7c74",
+          "S3Key": "serverless/optifuse-ecommerce-test/dev/1755790812056-2025-08-21T15:40:12.056Z/optifuse-ecommerce-test.zip"
+        },
+        "Handler": "handler.orderPlaced",
+        "Runtime": "nodejs18.x",
+        "FunctionName": "optifuse-ecommerce-test-dev-orderPlaced",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "TracingConfig": {
+          "Mode": "Active"
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "OrderPlacedLogGroup"
+      ]
+    },
+    "ProcessPaymentLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "serverless-framework-deployments-us-east-1-965f6254-7c74",
+          "S3Key": "serverless/optifuse-ecommerce-test/dev/1755790812056-2025-08-21T15:40:12.056Z/optifuse-ecommerce-test.zip"
+        },
+        "Handler": "handler.processPayment",
+        "Runtime": "nodejs18.x",
+        "FunctionName": "optifuse-ecommerce-test-dev-processPayment",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "TracingConfig": {
+          "Mode": "Active"
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "ProcessPaymentLogGroup"
+      ]
+    },
+    "UpdateInventoryLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "serverless-framework-deployments-us-east-1-965f6254-7c74",
+          "S3Key": "serverless/optifuse-ecommerce-test/dev/1755790812056-2025-08-21T15:40:12.056Z/optifuse-ecommerce-test.zip"
+        },
+        "Handler": "handler.updateInventory",
+        "Runtime": "nodejs18.x",
+        "FunctionName": "optifuse-ecommerce-test-dev-updateInventory",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "TracingConfig": {
+          "Mode": "Active"
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "UpdateInventoryLogGroup"
+      ]
+    },
+    "PrepareShippingLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "serverless-framework-deployments-us-east-1-965f6254-7c74",
+          "S3Key": "serverless/optifuse-ecommerce-test/dev/1755790812056-2025-08-21T15:40:12.056Z/optifuse-ecommerce-test.zip"
+        },
+        "Handler": "handler.prepareShipping",
+        "Runtime": "nodejs18.x",
+        "FunctionName": "optifuse-ecommerce-test-dev-prepareShipping",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "TracingConfig": {
+          "Mode": "Active"
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "PrepareShippingLogGroup"
+      ]
+    },
+    "NotifyCustomerLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "serverless-framework-deployments-us-east-1-965f6254-7c74",
+          "S3Key": "serverless/optifuse-ecommerce-test/dev/1755790812056-2025-08-21T15:40:12.056Z/optifuse-ecommerce-test.zip"
+        },
+        "Handler": "handler.notifyCustomer",
+        "Runtime": "nodejs18.x",
+        "FunctionName": "optifuse-ecommerce-test-dev-notifyCustomer",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "TracingConfig": {
+          "Mode": "Active"
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "NotifyCustomerLogGroup"
+      ]
+    },
+    "LogCompletionLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "serverless-framework-deployments-us-east-1-965f6254-7c74",
+          "S3Key": "serverless/optifuse-ecommerce-test/dev/1755790812056-2025-08-21T15:40:12.056Z/optifuse-ecommerce-test.zip"
+        },
+        "Handler": "handler.logCompletion",
+        "Runtime": "nodejs18.x",
+        "FunctionName": "optifuse-ecommerce-test-dev-logCompletion",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "TracingConfig": {
+          "Mode": "Active"
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "LogCompletionLogGroup"
+      ]
+    },
+    "OrderPlacedLambdaVersion3yVaJyJY5qsXHaXQd3T416uv43Vbta2IIVyLdSuc": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "OrderPlacedLambdaFunction"
+        },
+        "CodeSha256": "T4m1mCziWIwyweWcgavtiWX76XGsP7Hwq8YgR3IMm70="
+      }
+    },
+    "ProcessPaymentLambdaVersionsUt5hdFmJdJxxdfzIIWlDMOwDKCXSH7CJLGaQqrqirs": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ProcessPaymentLambdaFunction"
+        },
+        "CodeSha256": "T4m1mCziWIwyweWcgavtiWX76XGsP7Hwq8YgR3IMm70="
+      }
+    },
+    "UpdateInventoryLambdaVersion374iMM1b2GNhkRYVk9m8hBQ0F8jKIlsLo8DBUHeB6X4": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "UpdateInventoryLambdaFunction"
+        },
+        "CodeSha256": "T4m1mCziWIwyweWcgavtiWX76XGsP7Hwq8YgR3IMm70="
+      }
+    },
+    "PrepareShippingLambdaVersion3viI5zAybgH63cMlTMATqYb2ylDJrMiBmrc7ItmudKQ": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "PrepareShippingLambdaFunction"
+        },
+        "CodeSha256": "T4m1mCziWIwyweWcgavtiWX76XGsP7Hwq8YgR3IMm70="
+      }
+    },
+    "NotifyCustomerLambdaVersionVtVMnzdCgklpVpXjc56JI5xQaqHMuj92nGh6EX5sM": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "NotifyCustomerLambdaFunction"
+        },
+        "CodeSha256": "T4m1mCziWIwyweWcgavtiWX76XGsP7Hwq8YgR3IMm70="
+      }
+    },
+    "LogCompletionLambdaVersionVenebt1IkeZ1US9tgtbCWgTfbUfaBJuMKWANgUxZeY": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "LogCompletionLambdaFunction"
+        },
+        "CodeSha256": "T4m1mCziWIwyweWcgavtiWX76XGsP7Hwq8YgR3IMm70="
+      }
+    },
+    "HttpApi": {
+      "Type": "AWS::ApiGatewayV2::Api",
+      "Properties": {
+        "Name": "dev-optifuse-ecommerce-test",
+        "ProtocolType": "HTTP"
+      }
+    },
+    "HttpApiStage": {
+      "Type": "AWS::ApiGatewayV2::Stage",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "StageName": "$default",
+        "AutoDeploy": true,
+        "DefaultRouteSettings": {
+          "DetailedMetricsEnabled": false
+        }
+      }
+    },
+    "OrderPlacedLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "OrderPlacedLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationOrderPlaced": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "OrderPlacedLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 30000
+      }
+    },
+    "HttpApiRoutePostOrder": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "POST /order",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationOrderPlaced"
+              }
+            ]
+          ]
+        }
+      },
+      "DependsOn": "HttpApiIntegrationOrderPlaced"
+    }
+  },
+  "Outputs": {
+    "ServerlessDeploymentBucketName": {
+      "Value": "serverless-framework-deployments-us-east-1-965f6254-7c74",
+      "Export": {
+        "Name": "sls-optifuse-ecommerce-test-dev-ServerlessDeploymentBucketName"
+      }
+    },
+    "OrderPlacedLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "OrderPlacedLambdaVersion3yVaJyJY5qsXHaXQd3T416uv43Vbta2IIVyLdSuc"
+      },
+      "Export": {
+        "Name": "sls-optifuse-ecommerce-test-dev-OrderPlacedLambdaFunctionQualifiedArn"
+      }
+    },
+    "ProcessPaymentLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "ProcessPaymentLambdaVersionsUt5hdFmJdJxxdfzIIWlDMOwDKCXSH7CJLGaQqrqirs"
+      },
+      "Export": {
+        "Name": "sls-optifuse-ecommerce-test-dev-ProcessPaymentLambdaFunctionQualifiedArn"
+      }
+    },
+    "UpdateInventoryLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "UpdateInventoryLambdaVersion374iMM1b2GNhkRYVk9m8hBQ0F8jKIlsLo8DBUHeB6X4"
+      },
+      "Export": {
+        "Name": "sls-optifuse-ecommerce-test-dev-UpdateInventoryLambdaFunctionQualifiedArn"
+      }
+    },
+    "PrepareShippingLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "PrepareShippingLambdaVersion3viI5zAybgH63cMlTMATqYb2ylDJrMiBmrc7ItmudKQ"
+      },
+      "Export": {
+        "Name": "sls-optifuse-ecommerce-test-dev-PrepareShippingLambdaFunctionQualifiedArn"
+      }
+    },
+    "NotifyCustomerLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "NotifyCustomerLambdaVersionVtVMnzdCgklpVpXjc56JI5xQaqHMuj92nGh6EX5sM"
+      },
+      "Export": {
+        "Name": "sls-optifuse-ecommerce-test-dev-NotifyCustomerLambdaFunctionQualifiedArn"
+      }
+    },
+    "LogCompletionLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "LogCompletionLambdaVersionVenebt1IkeZ1US9tgtbCWgTfbUfaBJuMKWANgUxZeY"
+      },
+      "Export": {
+        "Name": "sls-optifuse-ecommerce-test-dev-LogCompletionLambdaFunctionQualifiedArn"
+      }
+    },
+    "HttpApiId": {
+      "Description": "Id of the HTTP API",
+      "Value": {
+        "Ref": "HttpApi"
+      },
+      "Export": {
+        "Name": "sls-optifuse-ecommerce-test-dev-HttpApiId"
+      }
+    },
+    "HttpApiUrl": {
+      "Description": "URL of the HTTP API",
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "HttpApi"
+            },
+            ".execute-api.",
+            {
+              "Ref": "AWS::Region"
+            },
+            ".",
+            {
+              "Ref": "AWS::URLSuffix"
+            }
+          ]
+        ]
+      },
+      "Export": {
+        "Name": "sls-optifuse-ecommerce-test-dev-HttpApiUrl"
+      }
+    }
+  }
+}
